@@ -51,10 +51,11 @@
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
 
-                    @Html.ActionLink("Home Tasks", "HomeTasks", "Evaluation", new { id = item.Id }, null)
+                    @Html.ActionLink("Evaluation", "Evaluate", new { id = item.Id }, null)
 
                 </td>
             </tr>
         }
+                    @Html.ActionLink("Back to courses list", "Courses", "Course")
     </tbody>
 </table>

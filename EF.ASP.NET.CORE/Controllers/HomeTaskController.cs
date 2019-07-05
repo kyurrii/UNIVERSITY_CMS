@@ -146,7 +146,7 @@ namespace EF.ASP.NET.CORE.Controllers
         [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Evaluate(int id)
         {
-            var homeTask = this.context.HomeTask.Include(c=>c.Course).Single(h=>h.Id==id);  //homeTaskService.GetHomeTaskById(id);
+            var homeTask = this.context.HomeTask.Include(c=>c.Course).Include(hs=>hs.HomeTaskAssessments).ThenInclude(s=>s.Student).Single(h=>h.Id==id);  //homeTaskService.GetHomeTaskById(id);
 
             if (homeTask == null)
             {
@@ -193,8 +193,9 @@ namespace EF.ASP.NET.CORE.Controllers
             return this.View(assessmentViewModel);
         }
 
-        // [Authorize(Roles = "Admin,Lecturer")]
-        public IActionResult SaveEvaluation(HomeTaskAssessmentViewModel model)
+        [HttpPost]
+         [Authorize(Roles = "Admin,Lecturer")]
+        public IActionResult Evaluate(HomeTaskAssessmentViewModel model)
         {
             var homeTask = this.context.HomeTask.Include(h=>h.HomeTaskAssessments).Single(h=>h.Id==model.HomeTaskId);    //homeTaskService.GetHomeTaskById(model.HomeTaskId);
 
