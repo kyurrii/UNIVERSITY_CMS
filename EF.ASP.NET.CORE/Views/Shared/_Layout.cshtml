@@ -34,6 +34,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Students">Students</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Courses">Courses</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Lecturer" asp-action="Lecturers">Lecturers</a></li>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li><a asp-controller="Security" asp-action="Login">Login</a></li>
+                        }
+                        else
+                        {
+
+                            <li><a class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Security" asp-action="Logout">Logout</a></li>
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li><a class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Security" asp-action="CreateUser">CreateUser</a></li>
+                                <li><a class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Security" asp-action="Users">AssignUserRole</a></li>
+                                <li><a class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Security" asp-action="CreateRole">CreateRole</a></li>
+                            }
+                            <li><p>Hello, @User.Identity.Name</p></li>
+                        }
+
+
                     </ul>
                 </div>
             </div>
