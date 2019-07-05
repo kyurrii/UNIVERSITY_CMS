@@ -70,11 +70,9 @@ namespace EF.ASP.NET.CORE.Controllers
        
             context.SaveChanges();
 
+            return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
 
-          //  this.CreateHomeTask(model, courseId);
-
-          
-            return RedirectToAction("Courses", "Course");
+          //  return RedirectToAction("Courses", "Course");
         }
 
         //private void CreateHomeTask(HomeTask homeTask, int courseId)
@@ -124,8 +122,10 @@ namespace EF.ASP.NET.CORE.Controllers
             context.SaveChanges();
 
             routeValueDictionary.Add("id", homeTask.Course.Id);
-            return RedirectToAction("Details", "Course", routeValueDictionary);
-           // return RedirectToAction("Details", "Course");
+            // return RedirectToAction("Details", "Course", routeValueDictionary);
+            //return RedirectToAction("Courses", "Course");
+            return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
+
         }
 
         [HttpGet]
@@ -133,13 +133,13 @@ namespace EF.ASP.NET.CORE.Controllers
         public IActionResult Delete(int Id)    //int courseId)
         {
          //   this.homeTaskService.DeleteHomeTask(homeTaskId);
-            HomeTask homeTask = this.context.HomeTask.SingleOrDefault(h => h.Id == Id);
+            HomeTask homeTask = this.context.HomeTask.Include(c=>c.Course).SingleOrDefault(h => h.Id == Id);
             this.context.HomeTask.Remove(homeTask);
             context.SaveChanges();
 
-            //var routeValueDictionary = new RouteValueDictionary();
-            //routeValueDictionary.Add("id", courseId);
-            return RedirectToAction("Courses", "Course");
+            var routeValueDictionary = new RouteValueDictionary();
+            routeValueDictionary.Add("id", homeTask.Course.Id);
+            return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
         }
 
         [HttpGet]

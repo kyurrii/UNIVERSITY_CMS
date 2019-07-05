@@ -1,0 +1,60 @@
+﻿@model IEnumerable<EF.ASP.NET.CORE.Models.HomeTask>
+@{
+    ViewData["Title"] = "HomeTasks";
+}
+
+<h1>HomeTasks</h1>
+
+@Html.Hidden("courseId", ViewData["CourseId"])
+
+@Html.ActionLink("Create New", "Create", "HomeTask", new { Id = ViewData["CourseId"] }, null)
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Number)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+
+                <td>
+
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
+
+                    @Html.ActionLink("Home Tasks", "HomeTasks", "Evaluation", new { id = item.Id }, null)
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
