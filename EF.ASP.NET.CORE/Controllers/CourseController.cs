@@ -245,15 +245,6 @@ namespace EF.ASP.NET.CORE.Controllers
 
             course.Lecturers.ToList().Clear();
 
-            //foreach (var lectId in allLecturerIds)
-            //{
-            //    var lecturer = context.Lecturer.SingleOrDefault(s => s.Id == lectId);
-            //    course.Lecturers.Remove(lecturer);
-            //    context.Lecturer.SingleOrDefault(s => s.Id == lectId).CourseId = null;
-            //    this.context.Update(lecturer);
-            //    context.SaveChanges();
-            //}
-
 
             this.context.Update(course);
         

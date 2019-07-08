@@ -17,7 +17,7 @@ namespace EF.ASP.NET.CORE.Models
         public int PassCredits { get; set; }
 
          public List<HomeTask> HomeTasks { get; set; }
-        //  [NotMapped]
+     
         public ICollection<Lecturer> Lecturers { get; set; } = new List<Lecturer>();
 
         public List<StudentCourse> StudentCour { get; set; } = new List<StudentCourse>();

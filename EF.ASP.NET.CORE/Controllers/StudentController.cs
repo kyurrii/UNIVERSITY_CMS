@@ -88,40 +88,7 @@ namespace EF.ASP.NET.CORE.Controllers
 
 
 
-        //[Authorize(Roles = "Admin,Lecturer")]
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var student = await context.Student
-        //        .Include(s => s.CourseStud)
-        //        .Include(hta=>hta.HomeTaskAssessments)
-                
-        //        .AsNoTracking()
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-
-        //    var coursesIDs = student.CourseStud.Select(s => s.CourseId).ToList();
-
-        //    ViewBag.CoursesNomber = context.StudentCourse.Where(s => s.StudentId == id).Count();
-        //    student.CourseStud.Clear();
-
-        //    foreach (var courseId in coursesIDs)
-        //    {
-        //        var course = this.context.Course.SingleOrDefault(s => s.Id == courseId);
-               
-        //        student.CourseStud.Add(new StudentCourse() { Course = course, Student = student, CourseId=course.Id, StudentId=student.Id });
-        //    }
-
-        //    if (student == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View("Details", student);
-        //}
+        
 
 
 
@@ -141,6 +108,7 @@ namespace EF.ASP.NET.CORE.Controllers
             model.Id = student.Id;
             model.Name = student.Name;
             model.BirthDate = student.BirthDate;
+            model.Email = student.Email;
             model.Notes = student.Notes;
             model.PhoneNumber = student.PhoneNumber;
             model.GitHubLink = student.GitHubLink;

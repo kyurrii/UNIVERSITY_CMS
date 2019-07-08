@@ -16,9 +16,9 @@ namespace EF.ASP.NET.CORE.Models
         public DateTime BirthDate { get; set; }
         [ForeignKey("Course")]
         public int? CourseId { get; set; }
-       // 
+     
        public virtual Course Course { get; set; }
         
-       // public List<Course> Courses { get; set; }
+      
     }
 }
