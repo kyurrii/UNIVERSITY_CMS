@@ -24,9 +24,7 @@ namespace EF.ASP.NET.CORE.Models
         public string Notes { get; set; }
 
         public List<StudentCourse> CourseStud { get; set; } = new List<StudentCourse>();
-        // [NotMapped]
-        //  public List<Course> Courses { get; set; } = new List<Course>();
-        //  [NotMapped]
+  
           public List<HomeTaskAssessment> HomeTaskAssessments { get; set; } = new List<HomeTaskAssessment>();
     }
 }

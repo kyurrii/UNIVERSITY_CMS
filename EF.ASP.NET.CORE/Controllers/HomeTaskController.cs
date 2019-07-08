@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EF.ASP.NET.CORE.ViewModels;
-
+using Services;
 using EF.ASP.NET.CORE.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +21,20 @@ namespace EF.ASP.NET.CORE.Controllers
 
     public class HomeTaskController : Controller
     {
+
+        private readonly HomeTaskService homeTaskService;
+        private readonly StudentService studentService;
+      
         private readonly UniContext context;
 
-        public HomeTaskController(UniContext _context)
+        public HomeTaskController(HomeTaskService homeTaskService, StudentService studentService, UniContext context)
         {
-            context = _context;
+            this.homeTaskService = homeTaskService;
+            this.studentService = studentService;
+            this.context = context;
         }
 
-        public IActionResult HomeTasks(int Id)
+         public IActionResult HomeTasks(int Id)
         {
             var homeTasks = context.HomeTask.Where(c => c.Course.Id == Id).ToList();
             ViewData["CourseId"] = Id;
@@ -38,58 +44,13 @@ namespace EF.ASP.NET.CORE.Controllers
 
         }
 
-        [HttpGet]
-       [Authorize(Roles = "Admin,Lecturer")]
-        public IActionResult Create(int Id)
-        {
-            ViewData["Action"] = "Create";
-            ViewData["CourseId"] = Id;
-            var testHomeTaskLastId = context.HomeTask.Select(s => s.Id).Last();
-            var homeTask = new HomeTask();
-            return View("Edit", homeTask);
-        }
-
-        [HttpPost]
-       [Authorize(Roles = "Admin,Lecturer")]
-        public IActionResult Create([Bind("Title,Description,Number,Date")] HomeTask model, int courseId)
-        {
-
-            
-            if (!ModelState.IsValid)
-            {
-                ViewData["Action"] = "Create";
-                ViewData["CourseId"] = courseId;
-                return View("Edit", model);
-            }
-            var routeValueDictionary = new RouteValueDictionary();
-            routeValueDictionary.Add("id", courseId);
-
-            var course = this.context.Course.SingleOrDefault(c => c.Id == courseId);
-            model.Course = course;
-            context.HomeTask.Add(model);
-       
-            context.SaveChanges();
-
-            return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
-
-          //  return RedirectToAction("Courses", "Course");
-        }
-
-        //private void CreateHomeTask(HomeTask homeTask, int courseId)
-        //{
-        //    var course = this.context.Course.SingleOrDefault(c=>c.Id==courseId);
-        //    homeTask.Course = course;
-        //    this.context.HomeTask.Add(homeTask);
-        //    this.context.Entry(homeTask).State = EntityState.Modified;
-            
-        //    context.SaveChanges();
-        //}
+     
 
         [HttpGet]
-       [Authorize(Roles = "Admin,Lecturer")]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Edit(int id)
         {
-            HomeTask homeTask = this.context.HomeTask.SingleOrDefault(h=>h.Id==id);
+            HomeTask homeTask = this.homeTaskService.GetHomeTaskById(id);
             if (homeTask == null)
                 return this.NotFound();
             ViewData["Action"] = "Edit";
@@ -108,7 +69,7 @@ namespace EF.ASP.NET.CORE.Controllers
                 return View(homeTaskParameter);
             }
 
-            var homeTask = this.context.HomeTask.Include(c=>c.Course).SingleOrDefault(h => h.Id == homeTaskParameter.Id);
+            var homeTask = this.context.HomeTask.Include(c => c.Course).SingleOrDefault(h => h.Id == homeTaskParameter.Id);
 
             homeTask.Title = homeTaskParameter.Title;
             homeTask.Number = homeTaskParameter.Number;
@@ -117,23 +78,63 @@ namespace EF.ASP.NET.CORE.Controllers
 
             var routeValueDictionary = new RouteValueDictionary();
 
-           // this.homeTaskService.UpdateHomeTask(homeTaskParameter);
+           
             this.context.Update(homeTask);
             context.SaveChanges();
 
             routeValueDictionary.Add("id", homeTask.Course.Id);
-            // return RedirectToAction("Details", "Course", routeValueDictionary);
-            //return RedirectToAction("Courses", "Course");
+         
+            return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Lecturer")]
+        public IActionResult Create(int Id)
+        {
+            ViewData["Action"] = "Create";
+            ViewData["CourseId"] = Id;
+
+            var homeTask = new HomeTask();
+            return View("Edit", homeTask);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Lecturer")]
+        public IActionResult Create([Bind("Title,Description,Number,Date")] HomeTask model, int courseId)
+        {
+
+
+            if (!ModelState.IsValid)
+            {
+                ViewData["Action"] = "Create";
+                ViewData["CourseId"] = courseId;
+                return View("Edit", model);
+            }
+            var routeValueDictionary = new RouteValueDictionary();
+            routeValueDictionary.Add("id", courseId);
+
+            var course = this.context.Course.SingleOrDefault(c => c.Id == courseId);
+            model.Course = course;
+            context.HomeTask.Add(model);
+
+            context.SaveChanges();
+
             return RedirectToAction("HomeTasks", "HomeTask", routeValueDictionary);
 
+       
         }
+
+
+       
+
 
         [HttpGet]
         [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Delete(int Id)    //int courseId)
         {
-         //   this.homeTaskService.DeleteHomeTask(homeTaskId);
-            HomeTask homeTask = this.context.HomeTask.Include(c=>c.Course).SingleOrDefault(h => h.Id == Id);
+            //   this.homeTaskService.DeleteHomeTask(homeTaskId);
+            HomeTask homeTask = this.context.HomeTask.Include(c => c.Course).SingleOrDefault(h => h.Id == Id);
             this.context.HomeTask.Remove(homeTask);
             context.SaveChanges();
 
@@ -146,7 +147,7 @@ namespace EF.ASP.NET.CORE.Controllers
         [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Evaluate(int id)
         {
-            var homeTask = this.context.HomeTask.Include(c=>c.Course).Include(hs=>hs.HomeTaskAssessments).ThenInclude(s=>s.Student).Single(h=>h.Id==id);  //homeTaskService.GetHomeTaskById(id);
+            var homeTask = this.context.HomeTask.Include(c => c.Course).Include(hs => hs.HomeTaskAssessments).ThenInclude(s => s.Student).Single(h => h.Id == id);  //homeTaskService.GetHomeTaskById(id);
 
             if (homeTask == null)
             {
@@ -163,9 +164,9 @@ namespace EF.ASP.NET.CORE.Controllers
                     HomeTaskId = homeTask.Id
                 };
 
-            
 
-            if (homeTask.HomeTaskAssessments?.Any()==true)  
+
+            if (homeTask.HomeTaskAssessments?.Any() == true)
             {
                 foreach (var homeTaskHomeTaskAssessment in homeTask.HomeTaskAssessments)
                 {
@@ -186,7 +187,7 @@ namespace EF.ASP.NET.CORE.Controllers
 
                 foreach (var student in studList)
                 {
-                    assessmentViewModel.HomeTaskStudents.Add(new HomeTaskStudentViewModel() { StudentFullName = student.Name, StudentId = student.Id});
+                    assessmentViewModel.HomeTaskStudents.Add(new HomeTaskStudentViewModel() { StudentFullName = student.Name, StudentId = student.Id });
                 }
             }
 
@@ -194,10 +195,10 @@ namespace EF.ASP.NET.CORE.Controllers
         }
 
         [HttpPost]
-         [Authorize(Roles = "Admin,Lecturer")]
+        [Authorize(Roles = "Admin,Lecturer")]
         public IActionResult Evaluate(HomeTaskAssessmentViewModel model)
         {
-            var homeTask = this.context.HomeTask.Include(h=>h.HomeTaskAssessments).Single(h=>h.Id==model.HomeTaskId);    //homeTaskService.GetHomeTaskById(model.HomeTaskId);
+            var homeTask = this.context.HomeTask.Include(h => h.HomeTaskAssessments).Single(h => h.Id == model.HomeTaskId);    //homeTaskService.GetHomeTaskById(model.HomeTaskId);
 
             if (homeTask == null)
             {
@@ -214,7 +215,7 @@ namespace EF.ASP.NET.CORE.Controllers
                 }
                 else
                 {
-                    var student = this.context.Student.Single(s=>s.Id==homeTaskStudent.StudentId);    //studentService.GetStudentById(homeTaskStudent.StudentId);
+                    var student = this.context.Student.Single(s => s.Id == homeTaskStudent.StudentId);    //studentService.GetStudentById(homeTaskStudent.StudentId);
                     homeTask.HomeTaskAssessments.Add(new HomeTaskAssessment
                     {
                         HomeTask = homeTask,

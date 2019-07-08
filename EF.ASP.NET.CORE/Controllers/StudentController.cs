@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EF.ASP.NET.CORE.Models;
+using EF.ASP.NET.CORE.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Services;
@@ -13,20 +14,15 @@ namespace EF.ASP.NET.CORE.Controllers
     public class StudentController : Controller
     {
 
-        //private readonly UniContext context;
+        private readonly UniContext context;
 
-        //public StudentController(UniContext _context)
-        //{
-        //    context = _context;
-
-        //}
-
-
+    
         private readonly StudentService studentService;
 
-        public StudentController(StudentService studentService)
+        public StudentController(StudentService studentService, UniContext context)
         {
             this.studentService = studentService;
+            this.context = context;
         }
 
         // GET
@@ -90,12 +86,6 @@ namespace EF.ASP.NET.CORE.Controllers
 
         }
 
-        //public IActionResult Students()
-        //{
-        //    var students = context.Student.ToList();
-
-        //    return View(students);
-        //}
 
 
         //[Authorize(Roles = "Admin,Lecturer")]
@@ -108,17 +98,21 @@ namespace EF.ASP.NET.CORE.Controllers
 
         //    var student = await context.Student
         //        .Include(s => s.CourseStud)
+        //        .Include(hta=>hta.HomeTaskAssessments)
+                
         //        .AsNoTracking()
         //        .FirstOrDefaultAsync(m => m.Id == id);
 
-        //    var coursesIDs = student.CourseStud.Select(s=>s.CourseId).ToList();
+        //    var coursesIDs = student.CourseStud.Select(s => s.CourseId).ToList();
 
         //    ViewBag.CoursesNomber = context.StudentCourse.Where(s => s.StudentId == id).Count();
+        //    student.CourseStud.Clear();
 
         //    foreach (var courseId in coursesIDs)
         //    {
         //        var course = this.context.Course.SingleOrDefault(s => s.Id == courseId);
-        //        student.CourseStud.Add(new StudentCourse() { Course = course, Student = student });
+               
+        //        student.CourseStud.Add(new StudentCourse() { Course = course, Student = student, CourseId=course.Id, StudentId=student.Id });
         //    }
 
         //    if (student == null)
@@ -126,71 +120,75 @@ namespace EF.ASP.NET.CORE.Controllers
         //        return NotFound();
         //    }
 
-        //    return View("Details",student);
+        //    return View("Details", student);
         //}
 
 
 
+        [Authorize(Roles = "Admin,Lecturer")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var student = await context.Student.Include(s=>s.CourseStud).FirstOrDefaultAsync(s => s.Id == id);
+            var coursesStd = this.context.StudentCourse.Where(s => s.StudentId == id).ToList();
 
-        //[HttpGet]
-        //[Authorize(Roles = "Admin")]
-        //public IActionResult Edit(int id)
-        //{
-        //    var student = context.Student.Single(s=>s.Id==id);
-        //    ViewData["Action"] = "Edit";
-        //    return this.View(student);
-        //}
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //public IActionResult Edit(Student model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewData["Action"] = "Edit";
-        //        return this.View("Edit", model);
-        //    }
-        //    this.context.Update(model);
-        //    this.context.SaveChanges();
+            StudentDetails model = new StudentDetails();
 
-        //    return RedirectToAction("Students");
-        //}
+            model.Id = student.Id;
+            model.Name = student.Name;
+            model.BirthDate = student.BirthDate;
+            model.Notes = student.Notes;
+            model.PhoneNumber = student.PhoneNumber;
+            model.GitHubLink = student.GitHubLink;
+            model.CourseView = new List<CourseViewModel>();
 
-        //[HttpGet]
-        //[Authorize(Roles = "Admin")]
-        //public IActionResult Delete(int id)
-        //{
-        //    var student = context.Student.Single(s => s.Id == id);
-        //    this.context.Student.Remove(student);
-        //    this.context.SaveChanges();
 
-        //    return RedirectToAction("Students");
-        //}
+            
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet]
-        //public IActionResult Create()
-        //{
-        //    ViewData["Action"] = "Create";
-        //    var student = new Student();
-        //    return this.View("Edit", student);
-        //}
+            var coursesIDs = student.CourseStud.Select(s => s.CourseId).ToList();
 
-        //[HttpPost]
-        //[Authorize(Roles = "Admin")]
-        //public IActionResult Create(Student model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewData["Action"] = "Create";
-        //        return this.View("Edit", model);
-        //    }
+            ViewBag.CoursesNomber = context.StudentCourse.Where(s => s.StudentId == id).Count();
+            model.CourseView.Clear();
 
-        //    this.context.Student.Add(model);
-        //    this.context.SaveChanges();
-        //    //this.studentService.CreateStudent(model);
-        //    return RedirectToAction("Students");
+            foreach (var courseId in coursesIDs)
+            {
+                var course = this.context.Course.Include(c=>c.HomeTasks).SingleOrDefault(s => s.Id == courseId);
 
-        //}
+                var htass = this.context.HomeTaskAssessment.Include(t=>t.HomeTask).ThenInclude(k=>k.Course).Include(t=>t.Student).Where(h => h.HomeTask.Course.Id == courseId && h.Student.Id == id).ToList();
+                // student.CourseStud.Add(new StudentCourse() { Course = course, Student = student, CourseId = course.Id, StudentId = student.Id });
+
+                int htqty = htass.Count();
+                int htasOkqty = htass.Where(h => h.IsComplete == true).Count();
+                double compRate = 0;
+                if (htqty != 0)
+                {
+                    compRate = htasOkqty  *100 / htqty;
+                }
+                    
+
+                model.CourseView.Add(new CourseViewModel() {CourseId=courseId,Name=course.Name,PassCredits=course.PassCredits,HomeTaskNomber=htqty, CompletionRate=compRate });
+
+
+            }
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+            
+
+
+
+
+            return View("Details", model);
+        }
+
+
+
+
     }
-    }
+}

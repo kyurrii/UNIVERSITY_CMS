@@ -31,16 +31,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
 
-                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Students">Students</a></li>
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Courses">Courses</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Students">Students</a></li>
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Lecturer" asp-action="Lecturers">Lecturers</a></li>
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-area=""  asp-controller="Security" asp-action="Login">Login</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Security" asp-action="Login">Login</a></li>
                         }
                         else
                         {
@@ -70,7 +67,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - University CMS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2019 - University CMS by Yuriy Kopychyn
         </div>
     </footer>
 

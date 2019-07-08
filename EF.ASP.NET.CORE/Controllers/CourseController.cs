@@ -88,7 +88,8 @@ namespace EF.ASP.NET.CORE.Controllers
                 course.StudentCour.Add(new StudentCourse() { Course = course, Student = student });
             }
 
-            this.context.Update(course);
+            this.context.Course.Update(course);
+ 
          
             context.SaveChanges();
          
@@ -201,7 +202,7 @@ namespace EF.ASP.NET.CORE.Controllers
         public IActionResult AssignLecturers(int id)
         {
             var allLecturers = context.Lecturer.ToList();
-            Course course = this.context.Course.SingleOrDefault(c => c.Id == id);
+            Course course = this.context.Course.Include(cr=>cr.Lecturers).SingleOrDefault(c => c.Id == id);
             CourseLecturerAssignmentViewModel model = new CourseLecturerAssignmentViewModel();
 
             model.Id = id;
@@ -236,20 +237,24 @@ namespace EF.ASP.NET.CORE.Controllers
 
         public virtual void SetLecturersToCourse(int courseId, IEnumerable<int> lecturerIds)
         {
-            var course = this.context.Course.SingleOrDefault(c => c.Id == courseId);
+            var course = this.context.Course.Include(cr=>cr.Lecturers).SingleOrDefault(c => c.Id == courseId);
 
             var allLecturerIds = context.Lecturer.Select(s => s.Id).ToList();
 
-            foreach (var lectId in allLecturerIds)
-            {
-                var lecturer = context.Lecturer.SingleOrDefault(s => s.Id == lectId);
-                course.Lecturers.Remove(lecturer);
-                context.Lecturer.SingleOrDefault(s => s.Id == lectId).CourseId = null;
-                this.context.Update(lecturer);
-                context.SaveChanges();
-            }
+         
 
-            
+            course.Lecturers.ToList().Clear();
+
+            //foreach (var lectId in allLecturerIds)
+            //{
+            //    var lecturer = context.Lecturer.SingleOrDefault(s => s.Id == lectId);
+            //    course.Lecturers.Remove(lecturer);
+            //    context.Lecturer.SingleOrDefault(s => s.Id == lectId).CourseId = null;
+            //    this.context.Update(lecturer);
+            //    context.SaveChanges();
+            //}
+
+
             this.context.Update(course);
         
             context.SaveChanges();

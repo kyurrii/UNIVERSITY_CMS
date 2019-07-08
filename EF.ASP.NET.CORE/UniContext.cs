@@ -21,9 +21,9 @@ namespace EF.ASP.NET.CORE
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-             //optionsBuilder.UseLazyLoadingProxies();
-
-            optionsBuilder.UseSqlServer(@"Data Source=KYURRII07\SQLEXPRESS;Initial Catalog=BaseCourse01;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            //optionsBuilder.UseLazyLoadingProxies();
+           // optionsBuilder.UseSqlServer(@Server= (localdb)\MSSQLLocalDB; Initial Catalog = BaseCourse001; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False");
+         //  optionsBuilder.UseSqlServer(@"Data Source=KYURRII07\SQLEXPRESS;Initial Catalog=BaseCourse01;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

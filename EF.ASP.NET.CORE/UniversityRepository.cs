@@ -23,6 +23,10 @@
             return this.DBSet.ToList();
         }
 
+
+        
+
+
         public T GetById(int id)
         {
             return this.DBSet.Find(id);

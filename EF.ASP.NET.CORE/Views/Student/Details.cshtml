@@ -1,0 +1,109 @@
+﻿@model EF.ASP.NET.CORE.ViewModels.StudentDetails;
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+@Html.HiddenFor(m => Model.Id)
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Student name
+            </th>
+            <th>
+                Birth date
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Phone number
+            </th>
+            <th>
+                GitHub link
+            </th>
+            <th>
+                Notes
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.Name</label>
+                </div>
+            </td>
+
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.BirthDate</label>
+                </div>
+
+
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.Email</label>
+                </div>
+
+
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.PhoneNumber</label>
+                </div>
+
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.GitHubLink</label>
+                </div>
+
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">@Model.Notes</label>
+                </div>
+
+
+            </td>
+
+        </tr>
+
+    </tbody>
+</table>
+
+<h4>Courses assigned to Student:</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course: </th>
+            <th>Coure pass credits: </th>
+            <th>Home tasks q-ty:</th>
+            <th>Home tasks completion rate:</th>
+            <th>Navigation Link:</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.CourseView.Count; i++)
+        {
+            <tr>
+                <td>@Model.CourseView[i].Name</td>
+
+                <td>@Model.CourseView[i].PassCredits</td>
+                <td>@Model.CourseView[i].HomeTaskNomber</td>
+                <td>@Model.CourseView[i].CompletionRate</td>
+                <td>
+                    @Html.ActionLink("HomeTasks", "HomeTasks", "HomeTask", new { id = Model.CourseView[i].CourseId })
+                </td>
+
+                @Html.HiddenFor(m => Model.CourseView[i].CourseId)
+            </tr>
+        }
+    </tbody>
+</table>

@@ -38,12 +38,17 @@ namespace EF.ASP.NET.CORE
             //    options.MinimumSameSitePolicy = SameSiteMode.None;
             //});
 
+            services.AddDbContext<UniContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDbContext<UniContext>();
 
             services.Configure<RepositoryOptions>(Configuration);
             services.AddScoped<StudentService>();
             services.AddScoped<CourseService>();
-           
+            services.AddScoped<LecturerService>();
+            services.AddScoped<HomeTaskService>();
+
             services.AddScoped(typeof(UniversityRepository<>));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
