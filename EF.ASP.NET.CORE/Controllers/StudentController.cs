@@ -87,11 +87,6 @@ namespace EF.ASP.NET.CORE.Controllers
         }
 
 
-
-        
-
-
-
         [Authorize(Roles = "Admin,Lecturer")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -115,7 +110,6 @@ namespace EF.ASP.NET.CORE.Controllers
             model.CourseView = new List<CourseViewModel>();
 
 
-            
 
             var coursesIDs = student.CourseStud.Select(s => s.CourseId).ToList();
 
@@ -147,9 +141,6 @@ namespace EF.ASP.NET.CORE.Controllers
             {
                 return NotFound();
             }
-            
-
-
 
 
             return View("Details", model);
